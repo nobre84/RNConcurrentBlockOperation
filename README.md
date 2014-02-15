@@ -8,7 +8,7 @@ Sample usage:
 ```Objective-C
   NSOperationQueue *queue = [NSOperationQueue new];
   queue.maxConcurrentOperations = 5;
-  RNConcurrentBlockOperation *asyncOperation = [RNConcurrentBlockOperation operationWithBlock:^(void(^completion)(void)){
+  RNConcurrentBlockOperation *asyncOperation = [RNConcurrentBlockOperation operationWithBlock:^(RNCompletionBlock completion) {
     //Some async operation
     //... ... ...
     //Async operation completed
