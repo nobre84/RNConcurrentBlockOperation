@@ -7,7 +7,7 @@ Pod::Spec.new do |s|
 
   s.homepage     = "https://github.com/nobre84/RNConcurrentBlockOperation"
  
-  s.license      = { :type => 'MIT', :file => 'FILE_LICENSE' }
+  s.license      = { :type => 'MIT', :file => 'LICENSE' }
 
   s.author       = { "Rafael Nobre" => "nobre84@gmail.com" }
   s.source       = { :git => "https://github.com/nobre84/RNConcurrentBlockOperation.git", :tag => s.version.to_s }
