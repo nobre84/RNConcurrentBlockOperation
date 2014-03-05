@@ -26,7 +26,8 @@
 
 @interface RNConcurrentBlockOperation()
 
-@property (nonatomic, copy) RNOperationBLock operationBlock;
+@property (nonatomic, copy) RNOperationBlock operationBlock;
+@property (nonatomic, copy) RNCancellableOperationBlock cancellableOperationBlock;
 
 @end
 
@@ -34,18 +35,32 @@
     BOOL _isFinished, _isExecuting;
 }
 
-+(instancetype)operationWithBlock:(RNOperationBLock)operationBlock {
-    id operation = [[self alloc]initWithBlock:operationBlock];
-    return operation;
-}
-
--(instancetype)initWithBlock:(RNOperationBLock)operationBlock {
+-(instancetype)initWithBlock:(RNOperationBlock)operationBlock {
     if (self = [super init]) {
         _isExecuting = NO;
         _isFinished = NO;
         self.operationBlock = operationBlock;
     }
     return self;
+}
+
++(instancetype)operationWithBlock:(RNOperationBlock)operationBlock {
+    id operation = [[self alloc]initWithBlock:operationBlock];
+    return operation;
+}
+
+-(instancetype)initWithCancellableBlock:(RNCancellableOperationBlock)operationBlock {
+    if (self = [super init]) {
+        _isExecuting = NO;
+        _isFinished = NO;
+        self.cancellableOperationBlock = operationBlock;
+    }
+    return self;
+}
+
++(instancetype)operationWithCancellableBlock:(RNCancellableOperationBlock)operationBlock {
+    id operation = [[self alloc]initWithCancellableBlock:operationBlock];
+    return operation;
 }
 
 -(BOOL)isConcurrent {
@@ -70,10 +85,21 @@
         _isExecuting = YES;
         [self didChangeValueForKey:@"isExecuting"];
         
-        //call the operation block and finish the operation when it signals completion
-        self.operationBlock(^{
-            [self finish];
-        });
+        if (self.operationBlock) {
+            //call the operation block and finish the operation when it signals completion
+            self.operationBlock(^{
+                [self finish];
+            });
+        }
+        if (self.cancellableOperationBlock) {
+            //call the cancellable operation block and optionally cancel, then finish the operation
+            self.cancellableOperationBlock(^{
+                [self finish];
+            }, ^{
+                [self cancel];
+                [self finish];
+            });
+        }
     }
 }
 

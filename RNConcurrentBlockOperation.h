@@ -49,11 +49,15 @@
 #import <Foundation/Foundation.h>
 
 typedef void (^RNCompletionBlock) (void);
-typedef void (^RNOperationBLock) (RNCompletionBlock completion);
+typedef void (^RNCancelationBlock) (void);
+typedef void (^RNOperationBlock) (RNCompletionBlock completion);
+typedef void (^RNCancellableOperationBlock) (RNCompletionBlock completion, RNCancelationBlock cancel);
 
 @interface RNConcurrentBlockOperation : NSOperation
 
--(instancetype)initWithBlock:(RNOperationBLock)block;
-+(instancetype)operationWithBlock:(RNOperationBLock)operationBlock;
+-(instancetype)initWithBlock:(RNOperationBlock)block;
++(instancetype)operationWithBlock:(RNOperationBlock)operationBlock;
+-(instancetype)initWithCancellableBlock:(RNCancellableOperationBlock)block;
++(instancetype)operationWithCancellableBlock:(RNCancellableOperationBlock)operationBlock;
 
 @end
