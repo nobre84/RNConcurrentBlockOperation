@@ -72,6 +72,7 @@
         //some RunLoop based asynchronous work must be started from the main thread so we ensure we start there.
         if (![NSThread isMainThread]) {
             [self performSelectorOnMainThread:@selector(start) withObject:nil waitUntilDone:NO];
+            return;
         }
         
         //if the operation has been cancelled before starting, finish right away.
@@ -87,15 +88,18 @@
         
         if (self.operationBlock) {
             //call the operation block and finish the operation when it signals completion
-            self.operationBlock(^{
+            self.operationBlock(^(NSDictionary *userInfo){
+                self.userInfo = userInfo;
                 [self finish];
             });
         }
         if (self.cancellableOperationBlock) {
             //call the cancellable operation block and optionally cancel, then finish the operation
-            self.cancellableOperationBlock(^{
+            self.cancellableOperationBlock(^(NSDictionary *userInfo){
+                self.userInfo = userInfo;
                 [self finish];
-            }, ^{
+            }, ^(NSDictionary *userInfo){
+                self.userInfo = userInfo;
                 [self cancel];
                 [self finish];
             });
