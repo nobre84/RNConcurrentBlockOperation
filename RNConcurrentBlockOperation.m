@@ -72,6 +72,7 @@
         //some RunLoop based asynchronous work must be started from the main thread so we ensure we start there.
         if (![NSThread isMainThread]) {
             [self performSelectorOnMainThread:@selector(start) withObject:nil waitUntilDone:NO];
+            return;
         }
         
         //if the operation has been cancelled before starting, finish right away.
