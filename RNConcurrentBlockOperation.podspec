@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
 
   s.author       = { "Rafael Nobre" => "nobre84@gmail.com" }
   s.source       = { :git => "https://github.com/nobre84/RNConcurrentBlockOperation.git", :tag => s.version.to_s }
-  s.source_files = '*.{h,m}'
+  s.source_files = 'RNConcurrentBlockOperation.{h,m}'
 
   s.requires_arc = true
 end

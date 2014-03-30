@@ -24,10 +24,17 @@
 
 #import "RNConcurrentBlockOperation.h"
 
+NSString * const RNOperationStatusKey = @"RNOperationStatusKey";
+NSString * const RNOperationStatusCanceled = @"RNOperationStatusCanceled";
+NSString * const RNOperationStatusFinished = @"RNOperationStatusFinished";
+
+NSString * const RNOperationResultKey = @"RNOperationResultKey";
+NSString * const RNOperationErrorKey = @"RNOperationErrorKey";
+
+
 @interface RNConcurrentBlockOperation()
 
 @property (nonatomic, copy) RNOperationBlock operationBlock;
-@property (nonatomic, copy) RNCancellableOperationBlock cancellableOperationBlock;
 
 @end
 
@@ -46,20 +53,6 @@
 
 +(instancetype)operationWithBlock:(RNOperationBlock)operationBlock {
     id operation = [[self alloc]initWithBlock:operationBlock];
-    return operation;
-}
-
--(instancetype)initWithCancellableBlock:(RNCancellableOperationBlock)operationBlock {
-    if (self = [super init]) {
-        _isExecuting = NO;
-        _isFinished = NO;
-        self.cancellableOperationBlock = operationBlock;
-    }
-    return self;
-}
-
-+(instancetype)operationWithCancellableBlock:(RNCancellableOperationBlock)operationBlock {
-    id operation = [[self alloc]initWithCancellableBlock:operationBlock];
     return operation;
 }
 
@@ -89,18 +82,11 @@
         if (self.operationBlock) {
             //call the operation block and finish the operation when it signals completion
             self.operationBlock(^(NSDictionary *userInfo){
+                //if the user signalled cancellation, do it before finishing.
+                if ([userInfo[RNOperationStatusKey] isEqualToString:RNOperationStatusCanceled]) {
+                    [self cancel];
+                }
                 self.userInfo = userInfo;
-                [self finish];
-            });
-        }
-        if (self.cancellableOperationBlock) {
-            //call the cancellable operation block and optionally cancel, then finish the operation
-            self.cancellableOperationBlock(^(NSDictionary *userInfo){
-                self.userInfo = userInfo;
-                [self finish];
-            }, ^(NSDictionary *userInfo){
-                self.userInfo = userInfo;
-                [self cancel];
                 [self finish];
             });
         }

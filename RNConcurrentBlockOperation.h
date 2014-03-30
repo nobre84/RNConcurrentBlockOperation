@@ -47,20 +47,53 @@
  */
 
 #import <Foundation/Foundation.h>
-@class RNConcurrentBlockOperation;
 
+/**
+ *  Block that signals the concurrent operation finished..
+ *
+ *  @param userInfo dictionary that allows the caller to signal the operation has been canceled or store a result to be inspected later in the operation's userInfo property.
+ *  @see RNOperationStatusKey
+ *  @see RNOperationResultKey
+ *  @see RNOperationErrorKey
+ */
 typedef void (^RNCompletionBlock) (NSDictionary *userInfo);
-typedef void (^RNCancelationBlock) (NSDictionary *userInfo);
+/**
+ *  Block that will be executed by RNConcurrentBlockOperation as a concurrent NSOperation. It will always be started on the main thread.
+ *
+ *  @param completion block that must be called when finishing or cancelling the operation so it can be properly finalized.
+ */
 typedef void (^RNOperationBlock) (RNCompletionBlock completion);
-typedef void (^RNCancellableOperationBlock) (RNCompletionBlock completion, RNCancelationBlock cancel);
+
+/**
+ *  Key added to the userInfo dictionary to indicate the operation status. Non existant key or a nil dictionary is interpreted the same as RNOperationStatusFinished.
+ */
+extern NSString * const RNOperationStatusKey;
+/**
+ *  Value passed to the userInfo's RNOperationStatusKey to indicate the operation has been canceled
+ */
+extern NSString * const RNOperationStatusCanceled;
+/**
+ *  Value passed to the userInfo's RNOperationStatusKey to indicate the operation has succeeded
+ */
+extern NSString * const RNOperationStatusFinished;
+
+/**
+ *  Key added to the userInfo dictionary to store the operation result
+ */
+extern NSString * const RNOperationResultKey;
+/**
+ *  Key added to the userInfo dictionary to store a NSError object associated with the operation
+ */
+extern NSString * const RNOperationErrorKey;
 
 @interface RNConcurrentBlockOperation : NSOperation
 
+/**
+ *  Dictionary that is passed to the completion block to influence the operation finish status, and may be inspected after the operation finished to get results or arbitrary data out of it.
+ */
 @property (nonatomic, strong) NSDictionary *userInfo;
 
 -(instancetype)initWithBlock:(RNOperationBlock)block;
 +(instancetype)operationWithBlock:(RNOperationBlock)operationBlock;
--(instancetype)initWithCancellableBlock:(RNCancellableOperationBlock)block;
-+(instancetype)operationWithCancellableBlock:(RNCancellableOperationBlock)operationBlock;
 
 @end
