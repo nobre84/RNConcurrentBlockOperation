@@ -25,35 +25,38 @@
 
 /**
  
-  RNConcurrentBlockOperation
-  ==========================
+ RNConcurrentBlockOperation
+ ==========================
  
-  RNConcurrentBlockOperation is a simple NSOperation subclass, similar to NSBlockOperation. It allows a block of work that is potentially asynchrounous to be submited into a NSOperationQueue for parallel execution.
+ RNConcurrentBlockOperation is a simple NSOperation subclass, similar to NSBlockOperation. It allows a block of work that is potentially asynchrounous to be submited into a NSOperationQueue for parallel execution.
  
  
-  Sample usage:
-
-  NSOperationQueue *queue = [NSOperationQueue new];
-  queue.maxConcurrentOperations = 5;
-  RNConcurrentBlockOperation *asyncOperation = [RNConcurrentBlockOperation operationWithBlock:^(RNCompletionBlock completion) {
-    //Some async operation
-    //... ... ...
-    //Async operation completed
-    completion();
+ Sample usage:
+ 
+ NSOperationQueue *queue = [NSOperationQueue new];
+ queue.maxConcurrentOperations = 5;
+ RNConcurrentBlockOperation *asyncOperation = [RNConcurrentBlockOperation operationWithBlock:^(RNCompletionBlock completion) {
+ //Some async operation
+ //... ... ...
+ //Async operation completed
+ completion();
  }];
  [queue addOperation:asyncOperation];
  
  
-*/
+ */
 
 #import <Foundation/Foundation.h>
+@class RNConcurrentBlockOperation;
 
-typedef void (^RNCompletionBlock) (void);
-typedef void (^RNCancelationBlock) (void);
+typedef void (^RNCompletionBlock) (NSDictionary *userInfo);
+typedef void (^RNCancelationBlock) (NSDictionary *userInfo);
 typedef void (^RNOperationBlock) (RNCompletionBlock completion);
 typedef void (^RNCancellableOperationBlock) (RNCompletionBlock completion, RNCancelationBlock cancel);
 
 @interface RNConcurrentBlockOperation : NSOperation
+
+@property (nonatomic, strong) NSDictionary *userInfo;
 
 -(instancetype)initWithBlock:(RNOperationBlock)block;
 +(instancetype)operationWithBlock:(RNOperationBlock)operationBlock;

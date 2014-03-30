@@ -88,15 +88,18 @@
         
         if (self.operationBlock) {
             //call the operation block and finish the operation when it signals completion
-            self.operationBlock(^{
+            self.operationBlock(^(NSDictionary *userInfo){
+                self.userInfo = userInfo;
                 [self finish];
             });
         }
         if (self.cancellableOperationBlock) {
             //call the cancellable operation block and optionally cancel, then finish the operation
-            self.cancellableOperationBlock(^{
+            self.cancellableOperationBlock(^(NSDictionary *userInfo){
+                self.userInfo = userInfo;
                 [self finish];
-            }, ^{
+            }, ^(NSDictionary *userInfo){
+                self.userInfo = userInfo;
                 [self cancel];
                 [self finish];
             });
