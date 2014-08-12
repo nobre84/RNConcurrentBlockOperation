@@ -6,7 +6,7 @@ RNConcurrentBlockOperation is a simple NSOperation subclass, similar to NSBlockO
 
 Sample usage:
 ```Objective-C
-      NSOperationQueue *queue = [NSOperationQueue new];
+    NSOperationQueue *queue = [NSOperationQueue new];
     queue.maxConcurrentOperationCount = 5;
     // Regular usage, only finishes the operation
     [queue addOperation:[RNConcurrentBlockOperation operationWithBlock:^(RNCompletionBlock completion) {
@@ -23,7 +23,7 @@ Sample usage:
         //... ... ...
         //Something happened (i.e user cancelled, network outage), and we want to bail
         //Async operation cancelled
-        NSError *error = nil; //Some possible error
+        NSError *error = [NSError new]; //Some possible error
         completion(@{RNOperationStatusKey: RNOperationStatusCanceled, RNOperationErrorKey: error});
     }]];
     // Store the operation value in the userInfo dictionary and finishes it.
